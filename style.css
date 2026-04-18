@@ -1,0 +1,96 @@
+/* --- 2. Navbar y Logo --- */
+.nav-logo {
+    height: 45px !important;
+    width: auto !important;
+    max-height: 45px !important;
+    object-fit: contain;
+}
+
+.glass-nav {
+    background: rgba(2, 8, 43, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+/* --- 7. Dropdown Menu --- */
+.dropdown-menu {
+    background-color: rgba(2, 8, 43, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-top: 3px solid #0d6efd !important;
+    border-radius: 12px !important;
+    padding: 10px;
+    margin-top: 15px !important;
+}
+
+.dropdown-item {
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(13, 110, 253, 0.2) !important;
+    color: #fff !important;
+    transform: translateX(5px);
+}
+
+.dropdown-item i {
+    width: 20px;
+    color: #0d6efd;
+    transition: 0.3s;
+}
+
+.navbar-text {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Opcional: ocultar en pantallas muy pequeñas si choca con el logo */
+@media (max-width: 480px) {
+    .navbar-text {
+        font-size: 0.7rem;
+    }
+}
+
+/* Botón de Materia más grande y llamativo */
+.btn-materia-tag {
+    background: rgba(0, 212, 255, 0.15);
+    border: 2px solid #00d4ff; /* Borde más grueso */
+    color: #00d4ff;
+    padding: 6px 18px; /* Más espacio interno */
+    border-radius: 8px; /* Bordes ligeramente más suaves */
+    font-weight: 900; /* Extra negrita */
+    text-transform: uppercase;
+    font-size: 0.9rem; /* Aumentado de 0.65 a 0.9 */
+    letter-spacing: 2px;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+    animation: glowStrong 2.5s infinite;
+    cursor: default;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* Animación con mayor rango de brillo */
+@keyframes glowStrong {
+    0%, 100% { 
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.4); 
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 25px rgba(0, 212, 255, 0.8), 0 0 10px #fff; 
+        transform: scale(1.02); /* Pequeño pulso de tamaño */
+    }
+}
+
+/* Estilo para el nombre de la materia */
+.fs-4 {
+    font-size: 1.4rem !important; /* Ajuste manual del tamaño para que sea legible */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+

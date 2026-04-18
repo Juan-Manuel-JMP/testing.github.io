@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Testeo Web - IFTS N° 9</title>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+</head>
+
+<body class="bg-slate-950 text-white p-6">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        
+        <a class="navbar-brand d-flex align-items-center m-0" href="#">
+            <img src="./logo.jpg" alt="IFTS 9" class="nav-logo" />
+            <span class="ms-2 fw-bold d-none d-sm-inline">IFTS 9</span>
+        </a>
+
+        <div class="navbar-text text-center flex-grow-1 d-flex align-items-center justify-content-center gap-3">
+            <button class="btn-materia-tag">
+                Materia:
+            </button>
+            
+            <span class="text-white fw-bold fs-4">Testing de Software</span>
+        </div>
+
+        <div class="d-flex align-items-center" style="width: 120px; visibility: hidden;">
+            </div>
+    </div>
+</nav>
+
+
+<main class="mt-24">
+        
+        <div class="bg-white text-black p-5 rounded-xl max-w-sm mb-6">
+            <h2 class="font-bold mb-2">Login Demo</h2>
+            <input id="user" class="w-full mb-2 p-2 border" placeholder="Usuario">
+            <input id="pass" type="password" class="w-full mb-2 p-2 border" placeholder="Password">
+            <button onclick="simularLogin()" class="bg-cyan-500 text-white w-full py-2 rounded">Login</button>
+            <p id="login-result" class="text-sm mt-2"></p>
+        </div>
+
+        <div class="flex gap-4 mb-4">
+            <button onclick="ejecutarPruebas()" class="bg-purple-600 px-4 py-2 rounded">▶ Ejecutar</button>
+            <button onclick="exportarPDF()" class="bg-emerald-500 px-4 py-2 rounded">📄 PDF</button>
+        </div>
+
+        <div id="log" class="bg-black text-green-400 p-3 h-32 overflow-y-auto text-xs font-mono mb-4"></div>
+
+<!-- TABLA -->
+<table id="tabla" class="display responsive nowrap w-full text-xs">
+<thead>
+<tr>
+<th>ID</th>
+<th>Título</th>
+<th>Módulo</th>
+<th>Prioridad</th>
+<th>Tipo</th>
+<th>Precondición</th>
+<th>Datos</th>
+<th>Pasos</th>
+<th>Esperado</th>
+<th>Actual</th>
+<th>Estado</th>
+<th>Evidencia</th>
+<th>Bug</th>
+<th>Navegador</th>
+<th>Creado</th>
+<th>Ejecutado</th>
+<th>Caja</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<script>
+
+// LOGIN
+function simularLogin(){
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
+let res=document.getElementById("login-result")
+
+if(!u||!p){res.innerHTML="⚠ Campos requeridos";return "validacion"}
+if(u==="usuario@demo.com"&&p==="123456"){res.innerHTML="✅ Login";return "success"}
+res.innerHTML="❌ Error";return "error"
+}
+
+// CASOS
+const casos = [
+
+{
+id:"TC_LOGIN_001",
+titulo:"Login correcto",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Funcional",
+pre:"Usuario registrado",
+datos:"Credenciales válidas",
+pasos:"Ingresar usuario y contraseña",
+esperado:"success",
+user:"usuario@demo.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_002",
+titulo:"Password incorrecto",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Seguridad",
+pre:"Usuario registrado",
+datos:"Password incorrecto",
+pasos:"Ingresar password incorrecto",
+esperado:"error",
+user:"usuario@demo.com",
+pass:"wrong"
+},
+
+{
+id:"TC_LOGIN_003",
+titulo:"Usuario inexistente",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Funcional",
+pre:"Página login",
+datos:"Usuario inválido",
+pasos:"Ingresar usuario falso",
+esperado:"error",
+user:"fake@demo.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_004",
+titulo:"Campos vacíos",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"UI",
+pre:"Página login",
+datos:"Vacío",
+pasos:"Click login sin datos",
+esperado:"validacion",
+user:"",
+pass:""
+},
+
+{
+id:"TC_LOGIN_005",
+titulo:"Solo usuario",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"UI",
+pre:"Página login",
+datos:"Solo user",
+pasos:"Ingresar usuario sin password",
+esperado:"validacion",
+user:"usuario@demo.com",
+pass:""
+},
+
+{
+id:"TC_LOGIN_006",
+titulo:"Solo password",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"UI",
+pre:"Página login",
+datos:"Solo password",
+pasos:"Ingresar password sin usuario",
+esperado:"validacion",
+user:"",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_007",
+titulo:"SQL Injection básico",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Seguridad",
+pre:"Página login",
+datos:"' OR 1=1",
+pasos:"Intentar bypass",
+esperado:"error",
+user:"' OR 1=1",
+pass:"123"
+},
+
+{
+id:"TC_LOGIN_008",
+titulo:"Intento de login con email mal formado",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página de login cargada",
+datos:"email sin dominio válido",
+pasos:"1. Ingresar email 'usuario@' y 'Contraseña' \n2. Click en login",
+esperado:"error",
+user:"usuario@",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_009",
+titulo:"Espacios en blanco",
+modulo:"Login",
+prioridad:"Media",
+tipo:"UI",
+pre:"Página login",
+datos:"Espacios",
+pasos:"Ingresar espacios",
+esperado:"validacion",
+user:"   ",
+pass:"   "
+},
+
+{
+id:"TC_LOGIN_010",
+titulo:"Email mal formado",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página login",
+datos:"usuario@",
+pasos:"Ingresar email inválido",
+esperado:"error",
+user:"usuario@",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_011",
+titulo:"Mayúsculas en usuario",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Funcional",
+pre:"Usuario registrado",
+datos:"USER",
+pasos:"Ingresar mayúsculas",
+esperado:"error",
+user:"USUARIO@DEMO.COM",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_012",
+titulo:"Password muy largo",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Seguridad",
+pre:"Página login",
+datos:"string largo",
+pasos:"Ingresar password largo",
+esperado:"error",
+user:"usuario@demo.com",
+pass:"123456789999999999"
+},
+
+{
+id:"TC_LOGIN_013",
+titulo:"Caracteres especiales",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Seguridad",
+pre:"Página login",
+datos:"!@#$%",
+pasos:"Ingresar símbolos",
+esperado:"error",
+user:"!@#$%",
+pass:"%%%%%"
+},
+
+{
+id:"TC_LOGIN_014",
+titulo:"Campos null",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página login",
+datos:"null",
+pasos:"Enviar null",
+esperado:"validacion",
+user:null,
+pass:null
+},
+
+{
+id:"TC_LOGIN_015",
+titulo:"Login repetido",
+modulo:"Login",
+prioridad:"Baja",
+tipo:"Funcional",
+pre:"Usuario logueado",
+datos:"Repetición",
+pasos:"Login doble",
+esperado:"success",
+user:"usuario@demo.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_016",
+titulo:"Usuario con espacios delante",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Validación",
+pre:"Página login",
+datos:" espacio user",
+pasos:"Ingresar espacios antes",
+esperado:"error",
+user:" usuario@demo.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_017",
+titulo:"Usuario con espacios detrás",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Validación",
+pre:"Página login",
+datos:"user espacio",
+pasos:"Ingresar espacios después",
+esperado:"error",
+user:"usuario@demo.com ",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_018",
+titulo:"Password con espacios",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Validación",
+pre:"Página login",
+datos:" pass ",
+pasos:"Espacios en pass",
+esperado:"error",
+user:"usuario@demo.com",
+pass:" 123456 "
+},
+
+{
+id:"TC_LOGIN_019",
+titulo:"Email con mayúsculas mixtas",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Funcional",
+pre:"Usuario registrado",
+datos:"Mixto",
+pasos:"Case sensitive",
+esperado:"error",
+user:"Usuario@Demo.Com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_020",
+titulo:"Password vacío con espacios",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página login",
+datos:"espacios",
+pasos:"Password espacios",
+esperado:"validacion",
+user:"usuario@demo.com",
+pass:"   "
+},
+
+{
+id:"TC_LOGIN_021",
+titulo:"Caracter Unicode",
+modulo:"Login",
+prioridad:"Baja",
+tipo:"Seguridad",
+pre:"Página login",
+datos:"ñáé",
+pasos:"Unicode input",
+esperado:"error",
+user:"ñáé",
+pass:"ñáé"
+},
+
+{
+id:"TC_LOGIN_022",
+titulo:"Input numérico",
+modulo:"Login",
+prioridad:"Baja",
+tipo:"Validación",
+pre:"Página login",
+datos:"12345",
+pasos:"Solo números",
+esperado:"error",
+user:"12345",
+pass:"12345"
+},
+
+{
+id:"TC_LOGIN_023",
+titulo:"Email largo extremo",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Rendimiento",
+pre:"Página login",
+datos:"string largo",
+pasos:"Ingresar email largo",
+esperado:"error",
+user:"a".repeat(200)+"@mail.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_024",
+titulo:"Password vacío null",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página login",
+datos:"null pass",
+pasos:"Null pass",
+esperado:"validacion",
+user:"usuario@demo.com",
+pass:null
+},
+
+{
+id:"TC_LOGIN_025",
+titulo:"Usuario null",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página login",
+datos:"null user",
+pasos:"Null user",
+esperado:"validacion",
+user:null,
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_026",
+titulo:"Ambos null",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Validación",
+pre:"Página login",
+datos:"null ambos",
+pasos:"Null total",
+esperado:"validacion",
+user:null,
+pass:null
+},
+
+{
+id:"TC_LOGIN_027",
+titulo:"Ataque script avanzado",
+modulo:"Login",
+prioridad:"Alta",
+tipo:"Seguridad",
+pre:"Página login",
+datos:"<img onerror>",
+pasos:"XSS avanzado",
+esperado:"error",
+user:"<img src=x onerror=alert()>",
+pass:"123"
+},
+
+{
+id:"TC_LOGIN_028",
+titulo:"Password correcto con user inválido",
+modulo:"Login",
+prioridad:"Media",
+tipo:"Funcional",
+pre:"Página login",
+datos:"mix",
+pasos:"User mal pass bien",
+esperado:"error",
+user:"fake@demo.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_029",
+titulo:"Login rápido repetido",
+modulo:"Login",
+prioridad:"Baja",
+tipo:"Rendimiento",
+pre:"Página login",
+datos:"stress",
+pasos:"Clicks rápidos",
+esperado:"success",
+user:"usuario@demo.com",
+pass:"123456"
+},
+
+{
+id:"TC_LOGIN_030",
+titulo:"Campos con tabulación",
+modulo:"Login",
+prioridad:"Baja",
+tipo:"UI",
+pre:"Página login",
+datos:"tab",
+pasos:"tab input",
+esperado:"error",
+user:"\tusuario",
+pass:"\t123"
+}
+
+]
+
+// DATATABLE
+let tabla
+
+$(document).ready(() => {
+
+    // si ya existe, lo destruye (evita bugs)
+    if ($.fn.DataTable.isDataTable("#tabla")) {
+        $("#tabla").DataTable().destroy()
+    }
+
+    tabla = $("#tabla").DataTable({
+        responsive: true,
+        pageLength: 5,
+        autoWidth: false,
+
+        
+        columnDefs: [
+            {
+                targets: "_all",
+                defaultContent: ""
+            }
+        ]
+    })
+
+})
+
+
+// LOG
+function log(m){
+let el=document.getElementById("log")
+el.innerHTML+=`<div>[${new Date().toLocaleTimeString()}] ${m}</div>`
+el.scrollTop=el.scrollHeight
+}
+
+function tipoCaja(caso){
+
+    if(!caso) return "Caja Negra"
+
+    const t = (caso.tipo || "").toLowerCase()
+    const titulo = (caso.titulo || "").toLowerCase()
+    const datos = (caso.datos || "").toLowerCase()
+
+    if(
+        t.includes("seguridad") ||
+        titulo.includes("sql") ||
+        titulo.includes("injection") ||
+        datos.includes("<img") ||
+        datos.includes("onerror") ||
+        datos.includes("script")
+    ){
+        return "Caja Blanca"
+    }
+
+    if(
+        t.includes("validación") ||
+        titulo.includes("email") ||
+        titulo.includes("unicode") ||
+        titulo.includes("null") ||
+        titulo.includes("espacios")
+    ){
+        return "Caja Gris"
+    }
+
+    return "Caja Negra"
+}
+
+
+// RUN
+async function ejecutarPruebas(){
+
+tabla.clear().draw()
+
+Swal.fire({title:"Ejecutando...",didOpen:()=>Swal.showLoading()})
+
+for(let c of casos){
+
+document.getElementById("user").value=c.user
+document.getElementById("pass").value=c.pass
+
+await new Promise(r=>setTimeout(r,500))
+
+let res = simularLogin()
+let estado = res === c.esperado ? "PASS" : "FAIL"
+
+// ✔ CALCULAR CAJA
+let caja = tipoCaja(c)
+
+tabla.row.add([
+c.id,
+c.titulo,
+c.modulo,
+c.prioridad,
+c.tipo,
+c.pre,
+c.datos,
+c.pasos,
+c.esperado,
+res,
+estado,
+"📸 evidencia.png",
+estado==="FAIL"?"BUG-001":"-",
+"Chrome",
+"QA Tester",
+new Date().toLocaleString(),
+caja
+])
+
+tabla.draw(false)
+
+log(`${c.id}: ${estado} | ${caja}`)
+
+await new Promise(r=>setTimeout(r,400))
+}
+
+Swal.fire("Finalizado","QA completo","success")
+}
+
+
+function exportarPDF(){
+
+    const { jsPDF } = window.jspdf
+    const doc = new jsPDF("l","mm","a4")
+
+    // ========================
+    // HEADER (LOGO + TITULO)
+    // ========================
+
+    // Logo (bloque simple tipo branding)
+    doc.setFillColor(0, 212, 255)
+    doc.circle(15, 15, 6, "F")
+
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(18)
+    doc.text("Trabajo Práctico de la Materia Testing QA", 30, 15)
+
+    // Subtítulo
+    doc.setFontSize(11)
+    doc.setFont("helvetica", "normal")
+    doc.text("Reporte de casos de Prueba ejecutados en entorno Web", 30, 22)
+
+    // Línea separadora
+    doc.setDrawColor(0, 212, 255)
+    doc.line(14, 28, 285, 28)
+
+    // ========================
+    // TABLA (DATOS COMPLETOS)
+    // ========================
+
+    let rows = []
+
+    tabla.rows().every(function(){
+    const d = this.data()
+
+    rows.push([
+        d[0], // ID
+        d[1], // Título
+        d[2], // Módulo
+        d[3], // Prioridad
+        d[4], // Tipo
+        d[8], // Esperado
+        d[9], // Actual
+        d[10], // Estado
+        d[16] // ✔ CAJA (ESTO FALTABA)
+    ])
+    })
+
+    doc.autoTable({
+        startY: 35,
+        head: [[
+        "ID",
+        "Título",
+        "Módulo",
+        "Prioridad",
+        "Tipo",
+        "Esperado",
+        "Resultado",
+        "Estado",
+        "Caja"
+        ]],
+        body: rows,
+        theme: "grid",
+        styles: {
+            fontSize: 8,
+            cellPadding: 2
+        },
+        headStyles: {
+            fillColor: [0, 212, 255],
+            textColor: 0,
+            fontStyle: "bold"
+        },
+        alternateRowStyles: {
+            fillColor: [245, 245, 245]
+        }
+    })
+
+    // ========================
+    // FOOTER
+    // ========================
+
+    const pageHeight = doc.internal.pageSize.height
+
+    doc.setFontSize(10)
+    doc.setTextColor(100)
+
+    doc.text(
+        "Sistema Casos de Pruebas",
+        14,
+        pageHeight - 20
+    )
+
+    doc.text(
+        "Uso Exclusivo IFTS N°9",
+        14,
+        pageHeight - 14
+    )
+
+    doc.text(
+        "© 2026 - JMP - Derechos Reservados",
+        14,
+        pageHeight - 8
+    )
+
+    // Descargar
+    doc.save("QA_Testing_Report.pdf")
+}
+
+</script>
+
+</body>
+</html>
