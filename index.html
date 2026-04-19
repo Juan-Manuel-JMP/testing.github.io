@@ -603,7 +603,7 @@ function tipoCaja(caso){
 }
 
 
-// RUN
+// Ejecutar
 async function ejecutarPruebas(){
 
 tabla.clear().draw()
@@ -620,7 +620,7 @@ await new Promise(r=>setTimeout(r,500))
 let res = simularLogin()
 let estado = res === c.esperado ? "PASS" : "FAIL"
 
-// ✔ CALCULAR CAJA
+// CALCULAR CAJA
 let caja = tipoCaja(c)
 
 tabla.row.add([
@@ -635,7 +635,7 @@ c.pasos,
 c.esperado,
 res,
 estado,
-"📸 evidencia.png",
+"evidencia.png",
 estado==="FAIL"?"BUG-001":"-",
 "Chrome",
 "QA Tester",
@@ -663,7 +663,7 @@ function exportarPDF(){
     // HEADER (LOGO + TITULO)
     // ========================
 
-    // Logo (bloque simple tipo branding)
+    // Logo 
     doc.setFillColor(0, 212, 255)
     doc.circle(15, 15, 6, "F")
 
@@ -698,7 +698,7 @@ function exportarPDF(){
         d[8], // Esperado
         d[9], // Actual
         d[10], // Estado
-        d[16] // ✔ CAJA
+        d[16] // Caja
     ])
     })
 
@@ -758,7 +758,7 @@ function exportarPDF(){
         pageHeight - 8
     )
 
-    // Descargar
+    // Descarga del PDF
     doc.save("QA_Testing_Report.pdf")
 }
 
